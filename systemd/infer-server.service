@@ -1,0 +1,19 @@
+[Unit]
+Description=AI Monitor Infer Server
+After=network-online.target zlmediakit.service
+Wants=network-online.target
+Requires=zlmediakit.service
+
+[Service]
+Type=simple
+User=hzhy
+Group=hzhy
+EnvironmentFile=/etc/ai-monitor/infer.env
+WorkingDirectory=/opt/ai-monitor/current
+ExecStart=/bin/sh -c 'LD_PRELOAD="$AI_MONITOR_INFER_LD_PRELOAD" "$AI_MONITOR_INFER_BIN" "$AI_MONITOR_INFER_CONFIG_PATH"'
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

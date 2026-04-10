@@ -1,0 +1,24 @@
+{
+  "http_port": 8080,
+  "zmq_endpoint": "tcp://0.0.0.0:5555",
+  "num_infer_workers": 2,
+  "decode_queue_size": 2,
+  "infer_queue_size": 12,
+  "streams_save_path": "/var/lib/ai-monitor/infer/streams.json",
+  "log_level": "info",
+  "pipeline_registry": {
+    "fatigue_detection": {
+      "runner_type": "fatigue_pipeline",
+      "face_detector_model_path": "/opt/ai-monitor/current/models/scrfd_2.5g_bnkps_shape640x640.rknn",
+      "face_detector_input_width": 640,
+      "face_detector_input_height": 640,
+      "face_conf_threshold": 0.5,
+      "face_nms_threshold": 0.4,
+      "landmark_model_path": "/opt/ai-monitor/current/models/pfld_106_face_landmarks_v3.rknn",
+      "landmark_input_width": 112,
+      "landmark_input_height": 112,
+      "max_faces": 1,
+      "select_largest_face": true
+    }
+  }
+}

@@ -1,0 +1,19 @@
+[Unit]
+Description=AI Monitor ZLMediaKit
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hzhy
+Group=hzhy
+EnvironmentFile=/etc/ai-monitor/zlm.env
+ExecStart=/bin/sh -c '"$AI_MONITOR_ZLM_BIN" -c "$AI_MONITOR_ZLM_CONFIG_PATH"'
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
