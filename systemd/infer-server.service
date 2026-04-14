@@ -6,8 +6,8 @@ Requires=zlmediakit.service
 
 [Service]
 Type=simple
-User=hzhy
-Group=hzhy
+User=root
+Group=root
 EnvironmentFile=/etc/ai-monitor/infer.env
 WorkingDirectory=/opt/ai-monitor/current
 ExecStart=/bin/sh -c 'LD_PRELOAD="$AI_MONITOR_INFER_LD_PRELOAD" "$AI_MONITOR_INFER_BIN" "$AI_MONITOR_INFER_CONFIG_PATH"'

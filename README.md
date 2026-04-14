@@ -12,6 +12,11 @@
 - `nginx/` 保存前端生产代理配置模板
 - `docs/` 保存安装、升级与现场演练文档
 
+边界约定：
+
+- ZLMediaKit、`ffmpeg-rk`、RKNN Runtime / MPP / RGA 属于基础环境，单独安装维护
+- `ai-monitor-release` 只负责交付业务应用及其配置模板
+
 文档入口：
 
 - `docs/开发到发布到部署操作手册.md`

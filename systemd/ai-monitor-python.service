@@ -6,8 +6,8 @@ Requires=infer-server.service
 
 [Service]
 Type=simple
-User=hzhy
-Group=hzhy
+User=root
+Group=root
 EnvironmentFile=/etc/ai-monitor/python.env
 WorkingDirectory=/opt/ai-monitor/current/python/app
 ExecStart=/bin/sh -c 'if [ -x /opt/ai-monitor/current/python/venv/bin/python ]; then exec /opt/ai-monitor/current/python/venv/bin/python /opt/ai-monitor/current/python/app/main.py; fi; exec python3 /opt/ai-monitor/current/python/app/main.py'

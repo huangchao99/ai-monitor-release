@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS cameras (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     rtsp_url TEXT NOT NULL,
-    location TEXT DEFAULT '',
+    location TEXT,
     status INTEGER DEFAULT 1 CHECK(status IN (0,1))
 );
 
@@ -13,30 +13,30 @@ CREATE TABLE IF NOT EXISTS algorithms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     algo_key TEXT UNIQUE,
     algo_name TEXT NOT NULL,
-    category TEXT DEFAULT '',
-    upload_recog_type TEXT DEFAULT '',
-    param_definition TEXT DEFAULT ''
+    category TEXT,
+    param_definition TEXT,
+    upload_recog_type TEXT DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_name TEXT NOT NULL,
     camera_id INTEGER NOT NULL,
-    alarm_device_id TEXT DEFAULT '',
+    alarm_device_id TEXT,
     status INTEGER DEFAULT 0 CHECK(status IN (0,1,2)),
-    error_msg TEXT DEFAULT '',
-    remark TEXT DEFAULT '',
+    error_msg TEXT,
+    remark TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (camera_id) REFERENCES cameras(id)
 );
 
 CREATE TABLE IF NOT EXISTS task_algo_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    task_id INTEGER NOT NULL,
-    algo_id INTEGER NOT NULL,
-    roi_config TEXT DEFAULT '[]',
-    algo_params TEXT DEFAULT '{}',
-    alarm_config TEXT DEFAULT '{}',
+    task_id INTEGER,
+    algo_id INTEGER,
+    roi_config TEXT,
+    algo_params TEXT,
+    alarm_config TEXT,
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
     FOREIGN KEY (algo_id) REFERENCES algorithms(id),
     UNIQUE(task_id, algo_id)
@@ -45,12 +45,14 @@ CREATE TABLE IF NOT EXISTS task_algo_details (
 CREATE TABLE IF NOT EXISTS alarms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_id INTEGER,
-    algo_name TEXT DEFAULT '',
+    algo_name TEXT,
     alarm_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    alarm_location TEXT DEFAULT '',
-    image_url TEXT DEFAULT '',
+    alarm_location TEXT,
+    image_url TEXT,
     status INTEGER DEFAULT 0 CHECK(status IN (0,1)),
-    alarm_details TEXT DEFAULT '',
+    alarm_details TEXT,
+    task_name TEXT NOT NULL DEFAULT '',
+    camera_name TEXT NOT NULL DEFAULT '',
     FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
 
@@ -73,21 +75,20 @@ CREATE TABLE IF NOT EXISTS models (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     model_name TEXT NOT NULL,
     model_path TEXT NOT NULL,
-    labels_path TEXT DEFAULT '',
-    model_type TEXT DEFAULT 'yolov11',
+    labels_path TEXT,
+    model_type TEXT DEFAULT 'yolov5',
     input_width INTEGER DEFAULT 640,
     input_height INTEGER DEFAULT 640,
-    conf_threshold REAL DEFAULT 0.35,
+    conf_threshold REAL DEFAULT 0.25,
     nms_threshold REAL DEFAULT 0.45
 );
 
 CREATE TABLE IF NOT EXISTS algo_model_map (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     algo_id INTEGER NOT NULL,
-    model_id INTEGER NOT NULL,
-    UNIQUE(algo_id, model_id),
-    FOREIGN KEY (algo_id) REFERENCES algorithms(id) ON DELETE CASCADE,
-    FOREIGN KEY (model_id) REFERENCES models(id) ON DELETE CASCADE
+    model_id INTEGER,
+    FOREIGN KEY (algo_id) REFERENCES algorithms(id),
+    FOREIGN KEY (model_id) REFERENCES models(id)
 );
 
 CREATE TABLE IF NOT EXISTS system_settings (

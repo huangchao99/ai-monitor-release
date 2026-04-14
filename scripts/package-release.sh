@@ -6,7 +6,6 @@ VERSION="${1:-$(tr -d '[:space:]' < "$ROOT_DIR/manifest/VERSION")}"
 DIST_DIR="${AI_MONITOR_RELEASE_DIST:-$ROOT_DIR/dist}"
 PKG_DIR="$DIST_DIR/ai-monitor-release-$VERSION"
 
-ZLM_BIN_SRC="${AI_MONITOR_ZLM_BIN_SRC:-/home/hzhy/ZLMediaKit/release/linux/Debug/MediaServer}"
 MODELS_SRC="${AI_MONITOR_MODELS_SRC:-/home/hzhy/models}"
 AUDIO_SRC="${AI_MONITOR_AUDIO_SRC:-/home/hzhy/Audio}"
 
@@ -34,7 +33,6 @@ mkdir -p \
 
 cp -a "$ROOT_DIR/.build/backend/ai-monitor-backend" "$PKG_DIR/bin/"
 cp -a "$ROOT_DIR/.build/infer/infer_server" "$PKG_DIR/bin/"
-cp -a "$ZLM_BIN_SRC" "$PKG_DIR/bin/MediaServer"
 cp -a "$ROOT_DIR/.build/frontend/dist" "$PKG_DIR/frontend/dist"
 cp -a "$ROOT_DIR/.build/python/app" "$PKG_DIR/python/app"
 
