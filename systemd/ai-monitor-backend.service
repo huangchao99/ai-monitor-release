@@ -6,8 +6,8 @@ Requires=ai-monitor-python.service zlmediakit.service
 
 [Service]
 Type=simple
-User=hzhy
-Group=hzhy
+User=root
+Group=root
 EnvironmentFile=/etc/ai-monitor/backend.env
 WorkingDirectory=/opt/ai-monitor/current
 ExecStart=/opt/ai-monitor/current/bin/ai-monitor-backend
