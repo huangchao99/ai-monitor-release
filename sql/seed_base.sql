@@ -23,7 +23,9 @@ INSERT OR IGNORE INTO position_runtime_status (
 INSERT OR IGNORE INTO algorithms (algo_key, algo_name, category, upload_recog_type, param_definition) VALUES
     ('no_person', '离岗', '行为分析', 'rylg', '[{"key":"confidence","label":"置信度阈值","type":"number","default":0.35,"min":0.1,"max":1.0,"step":0.05},{"key":"duration","label":"持续时间(秒)","type":"number","default":120,"min":1,"max":600,"step":1},{"key":"skip_frame","label":"跳帧数","type":"number","default":10,"min":1,"max":30,"step":1}]'),
     ('eye_close', '闭眼', '行为分析', 'by', '[{"key":"duration","label":"持续时间(秒)","type":"number","default":30,"min":1,"max":300,"step":1},{"key":"ear_threshold","label":"EAR阈值","type":"number","default":0.22,"min":0.05,"max":0.4,"step":0.01}]'),
+    ('eye_close_yolo', '闭眼YOLO版', '行为分析', 'by', '[{"key":"duration","label":"持续闭眼时间(秒)","type":"number","default":10,"min":1,"max":30,"step":1},{"key":"skip_frame","label":"跳帧数","type":"number","default":5,"min":1,"max":30,"step":1}]'),
     ('yawning', '打哈欠', '行为分析', 'dhq', '[{"key":"yawn_count","label":"哈欠次数","type":"number","default":3,"min":1,"max":10,"step":1},{"key":"yawn_duration","label":"统计窗口(秒)","type":"number","default":180,"min":30,"max":600,"step":1}]'),
+    ('yawning_yolo', '打哈欠YOLO版', '行为分析', 'dhq', '[{"key":"yawn_duration","label":"判定时间窗口(秒)","type":"number","default":180,"min":30,"max":600,"step":10},{"key":"yawn_count","label":"哈欠次数阈值","type":"number","default":3,"min":1,"max":20,"step":1},{"key":"skip_frame","label":"跳帧数","type":"number","default":1,"min":1,"max":30,"step":1}]'),
     ('eat_banana', '吃香蕉', '行为分析', '', '[{"key":"confidence","label":"置信度阈值","type":"number","default":0.35,"min":0.1,"max":1.0,"step":0.05},{"key":"duration","label":"持续时间(秒)","type":"number","default":30,"min":1,"max":300,"step":1}]'),
     ('no_hardhat', '未戴安全帽', 'PPE', 'wcaqm', '[]'),
     ('no_mask', '未戴口罩', 'PPE', 'Driver-NoMask', '[]'),
