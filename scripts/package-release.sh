@@ -59,6 +59,7 @@ cp -a "$ROOT_DIR/scripts/." "$PKG_DIR/scripts/"
 cp -a "$ROOT_DIR/manifest/." "$PKG_DIR/manifest/"
 cp -a "$ROOT_DIR/docs/." "$PKG_DIR/docs/"
 cp -a "$ROOT_DIR/nginx/." "$PKG_DIR/nginx/"
+cp -a "$ROOT_DIR/scripts/install-ai-monitor.sh" "$DIST_DIR/install-ai-monitor.sh"
 
 printf '%s\n' "$VERSION" > "$PKG_DIR/VERSION"
 date -u +"BUILD_TIME_UTC=%Y-%m-%dT%H:%M:%SZ" > "$PKG_DIR/manifest/build-info.env"
@@ -68,5 +69,7 @@ date -u +"BUILD_TIME_UTC=%Y-%m-%dT%H:%M:%SZ" > "$PKG_DIR/manifest/build-info.env
     ! -path './manifest/checksums.sha256' \
     -print0 | sort -z | xargs -0 sha256sum > manifest/checksums.sha256
 )
+
+chmod +x "$DIST_DIR/install-ai-monitor.sh"
 
 echo "[package-release] created $PKG_DIR"

@@ -7,6 +7,7 @@ OUT_DIR="${1:-$ROOT_DIR/.build/python}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 COPY_VENV="${AI_MONITOR_COPY_VENV:-0}"
 PIP_TIMEOUT="${AI_MONITOR_PIP_TIMEOUT:-120}"
+FALLBACK_INDEX_URL="${AI_MONITOR_PIP_FALLBACK_INDEX_URL:-https://pypi.org/simple}"
 
 mkdir -p "$OUT_DIR"
 
@@ -19,6 +20,10 @@ PIP_ARGS=(
   -r "$SRC_DIR/requirements.txt"
   -w "$OUT_DIR/wheels"
 )
+
+build_wheels() {
+  "$PYTHON_BIN" -m pip "$@"
+}
 
 if [[ -n "${AI_MONITOR_PIP_INDEX_URL:-}" ]]; then
   PIP_ARGS+=(--index-url "$AI_MONITOR_PIP_INDEX_URL")
@@ -44,7 +49,61 @@ rsync -a \
 echo "[build-python] build wheels from requirements.txt"
 rm -rf "$OUT_DIR/wheels"
 mkdir -p "$OUT_DIR/wheels"
-"$PYTHON_BIN" -m pip "${PIP_ARGS[@]}"
+
+set +e
+BUILD_OUTPUT="$(build_wheels "${PIP_ARGS[@]}" 2>&1)"
+BUILD_STATUS=$?
+set -e
+printf '%s\n' "$BUILD_OUTPUT"
+
+if [[ "$BUILD_STATUS" -ne 0 ]]; then
+  if [[ -n "${AI_MONITOR_PIP_INDEX_URL:-}" && "$BUILD_OUTPUT" == *"No matching distribution found for pyzmq"* ]]; then
+    echo "[build-python] pyzmq not available from mirror, retry with fallback index: $FALLBACK_INDEX_URL"
+
+    TMP_REQ_DIR="$(mktemp -d)"
+    cleanup_tmp_req_dir() {
+      rm -rf "$TMP_REQ_DIR"
+    }
+    trap cleanup_tmp_req_dir EXIT
+
+    NON_PYZMQ_REQ="$TMP_REQ_DIR/requirements-no-pyzmq.txt"
+    rg -v '^\s*pyzmq(\s|$)' "$SRC_DIR/requirements.txt" > "$NON_PYZMQ_REQ"
+
+    rm -rf "$OUT_DIR/wheels"
+    mkdir -p "$OUT_DIR/wheels"
+
+    NON_PYZMQ_ARGS=(
+      wheel
+      --default-timeout "$PIP_TIMEOUT"
+      -r "$NON_PYZMQ_REQ"
+      -w "$OUT_DIR/wheels"
+      --index-url "$AI_MONITOR_PIP_INDEX_URL"
+    )
+
+    if [[ -n "${AI_MONITOR_PIP_EXTRA_INDEX_URL:-}" ]]; then
+      NON_PYZMQ_ARGS+=(--extra-index-url "$AI_MONITOR_PIP_EXTRA_INDEX_URL")
+    fi
+
+    if [[ -n "${AI_MONITOR_PIP_TRUSTED_HOST:-}" ]]; then
+      NON_PYZMQ_ARGS+=(--trusted-host "$AI_MONITOR_PIP_TRUSTED_HOST")
+    fi
+
+    build_wheels "${NON_PYZMQ_ARGS[@]}"
+
+    PYZMQ_ARGS=(
+      wheel
+      --default-timeout "$PIP_TIMEOUT"
+      pyzmq
+      -w "$OUT_DIR/wheels"
+      --index-url "$FALLBACK_INDEX_URL"
+    )
+
+    echo "[build-python] download pyzmq from fallback index"
+    build_wheels "${PYZMQ_ARGS[@]}"
+  else
+    exit "$BUILD_STATUS"
+  fi
+fi
 
 if [[ "$COPY_VENV" == "1" && -d "$SRC_DIR/venv" ]]; then
   echo "[build-python] copy existing venv because AI_MONITOR_COPY_VENV=1"
